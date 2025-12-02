@@ -1,1 +1,19 @@
-# 100DaysOfSwiftUI
+# Amier's 100DaysOfSwiftUI Journey
+## Paul Hudson's Swift & SwiftUI Course
+### https://www.hackingwithswift.com/100/swiftui
+
+## About
+This repository documents my progress through Paul Hudson's "100 days of SwiftUI" course. My goal is to get comfortable with the fundamentals of Swift so I can start building some iOS applications!
+
+## **Status**: Completed Day 6 / 100
+
+## Learning Strategy
+I learn better and have more fun learning when I get hands-on and actually apply what I am learning. So, in addition to completing the daily curriculum, I plan on:
+ - completing all corresponding tests/challenges in the Unwrap app
+ - using AI to create supplementary problems to consolidate knowledge periodically
+    - these live in the "AIConsolidations" folder of the repo
+## File Structure:
+/Daily/
+    - contains all daily lesson files
+/Checkpoints/
+/AIConsolidations
