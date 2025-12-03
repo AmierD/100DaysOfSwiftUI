@@ -8,13 +8,15 @@ This repository documents my progress through Paul Hudson's "100 days of SwiftUI
 ## **Status**: Completed Day 7 / 100
 
 ## Learning Strategy
-I learn better and have more fun learning when I get hands-on and actually apply what I am learning. So, in addition to completing the daily curriculum, I plan on:
- - completing all corresponding tests/challenges in the Unwrap app
- - using AI to create supplementary problems to consolidate knowledge periodically
+**I learn better and have more fun learning when I get hands-on and actually apply what I am learning.** So, in addition to completing the daily curriculum, I plan on:
+ - completing all corresponding **tests/challenges in the Unwrap app** (made by Paul Hudson)
+ - using AI to create/review **supplementary problems** to consolidate knowledge periodically
     - these live in the "AIConsolidations" folder of the repo
- - using AI to create quizzes on material 
+ - using AI to create **quizzes** on material 
 ## File Structure:
-###/AIConsolidations/
-###/Checkpoints/
-###/Daily/
+###`/AIConsolidations/`
+###`/Checkpoints/`
+###`/Daily/`
     - contains all daily lesson files
+###`/Prompts/`
+    - contains all prompts used for AI-assisted learning
