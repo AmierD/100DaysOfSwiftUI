@@ -14,9 +14,9 @@ This repository documents my progress through Paul Hudson's "100 days of SwiftUI
     - these live in the "AIConsolidations" folder of the repo
  - using AI to create **quizzes** on material 
 ## File Structure:
-###`/AIConsolidations/`
-###`/Checkpoints/`
-###`/Daily/`
+### `/AIConsolidations/`
+### `/Checkpoints/`
+### `/Daily/`
     - contains all daily lesson files
-###`/Prompts/`
+### `/Prompts/`
     - contains all prompts used for AI-assisted learning
