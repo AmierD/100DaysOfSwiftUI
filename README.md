@@ -5,7 +5,7 @@
 ## About
 This repository documents my progress through Paul Hudson's "100 days of SwiftUI" course. My goal is to get comfortable with the fundamentals of Swift so I can start building some iOS applications!
 
-## **Status**: Completed Day 17 / 100
+## **Status**: Completed Day 18 / 100
 
 ## Learning Strategy
 **I learn better and have more fun learning when I get hands-on and actually apply what I am learning.** So, in addition to completing the daily curriculum, I plan on:
