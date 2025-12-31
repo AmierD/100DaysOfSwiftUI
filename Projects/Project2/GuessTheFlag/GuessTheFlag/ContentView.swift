@@ -23,9 +23,13 @@ struct ContentView: View {
     ]
         .shuffled()
     @State private var correctAnswer = Int.random(in: 0..<3)
-    @State private var showingScore = false
+    @State private var showingScoreAlert = false
     @State private var scoreTitle = " "
     @State private var isAnswerCorrect = false
+    @State private var score = 0
+    @State private var highScore = 0
+    @State private var countQuestions = 0
+    @State private var showingGameEndAlert = false
     
     var body: some View {
         ZStack {
@@ -57,15 +61,26 @@ struct ContentView: View {
                 }
                 Spacer()
                 Spacer()
-                Text("Score: ???")
+                VStack {
+                    Text("Score: \(score)")
+                    Text("High score: \(highScore)")
+                }
                 Spacer()
             }
             .padding()
         }
-        .alert(scoreTitle, isPresented: $showingScore) {
-            Button("Play again", action: askQuestion)
+        .alert(scoreTitle, isPresented: $showingScoreAlert) {
+            Button("Play again", action: showNewFlags)
         } message: {
-            Text("Your score is ???")
+            Text("Score: \(score)")
+        }
+        .alert("Game over", isPresented: $showingGameEndAlert) {
+            Button(
+                highScore == 8 ? "You win!" : "Start over",
+                action: resetGame
+            )
+        } message: {
+            Text("Your high score: \(highScore)")
         }
     }
     
@@ -73,20 +88,42 @@ struct ContentView: View {
         if number == correctAnswer {
             scoreTitle = "Correct"
             isAnswerCorrect = true
+            score += 1
+            showNewFlags()
         } else {
-            scoreTitle = "Incorrect"
+            scoreTitle = "Incorrect. That was \(countries[number])"
             isAnswerCorrect = false
+            showingScoreAlert = true
+            
         }
+        handleHighScore()
+        countQuestions += 1
         
-        showingScore = true
+        if countQuestions == 8 {
+            showingGameEndAlert = true
+        }
     }
     
-    func askQuestion() {
+    func showNewFlags() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
-        
-        scoreTitle = " "
+        if scoreTitle.hasPrefix("Incorrect") {
+            score = 0
+        }
         isAnswerCorrect = false
+    }
+    
+    func handleHighScore() {
+        if score > highScore {
+            highScore = score
+        }
+    }
+    
+    func resetGame() {
+        countQuestions = 0
+        score = 0
+        highScore = 0
+        showNewFlags()
     }
 }
 
