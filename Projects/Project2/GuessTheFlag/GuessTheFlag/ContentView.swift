@@ -55,8 +55,7 @@ struct ContentView: View {
                     Button {
                         flagTapped(number)
                     } label: {
-                        Image(countries[number])
-                            .shadow(radius: 5)
+                        FlagImage(item: countries[number])
                     }
                 }
                 Spacer()
@@ -124,6 +123,23 @@ struct ContentView: View {
         score = 0
         highScore = 0
         showNewFlags()
+    }
+}
+
+struct FlagImage: View {
+    var item: String
+    
+    var body: some View {
+        Image(item)
+            .shadow(radius: 5)
+    }
+}
+
+struct LargeBlue: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.largeTitle)
+            .foregroundStyle(.blue)
     }
 }
 

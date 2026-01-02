@@ -65,6 +65,7 @@ struct ContentView: View {
                     
                             )
                     )
+                    .foregroundStyle(tipPercentage == 0 ? .red : .black)
                 }
                 Section("Amount Per Person") {
                     Text(
