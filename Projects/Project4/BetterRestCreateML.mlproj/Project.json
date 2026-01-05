@@ -1,0 +1,29 @@
+{
+  "activityEntities" : [
+    "projectCreated",
+    [
+      {
+        "createdDate" : "2026-01-05T04:10:22Z",
+        "event" : "projectCreated",
+        "id" : "5A6E8923-76E1-414D-B33D-9D60CD569E47",
+        "subtitle" : "BetterRestCreateML",
+        "title" : "Project Created"
+      }
+    ]
+  ],
+  "authorName" : "Amier Davis",
+  "createdDate" : "2026-01-05T04:10:22Z",
+  "description" : "",
+  "id" : "D146A737-97A8-4D1E-B958-EFC2D7F51F6D",
+  "license" : "",
+  "location" : "",
+  "modifiedDate" : "2026-01-05T04:10:22Z",
+  "projectName" : "BetterRestCreateML",
+  "settingsEntity" : {
+    "snapshotOnExtendTraining" : true,
+    "snapshotOnResumeTraining" : false
+  },
+  "taskType" : "generalRegresor",
+  "title" : "Tabular Regression",
+  "version" : "1.1"
+}
