@@ -24,40 +24,69 @@ struct ContentView: View {
     @State private var alertMessage = ""
     @State private var showingAlert = false
     
+    var bedtime: String {
+        do {
+            let config = MLModelConfiguration()
+            // reads in all data and outputs a prediction:
+            let model = try SleepCalculator(configuration: config)
+            
+            let components = Calendar.current.dateComponents(
+                [.hour, .second],
+                from: wakeUp
+            )
+            let hour = (components.hour ?? 0) * 60 * 60
+            let seconds = (components.second ?? 0) * 60
+            
+            let prediction = try model.prediction(
+                wake: Double(hour + seconds),
+                estimatedSleep: sleepAmount,
+                coffee: Double(coffeeAmount)
+            )
+            
+            let sleepTime = wakeUp - prediction.actualSleep
+            return "\(sleepTime.formatted(date: .omitted, time: .shortened))"
+        } catch {
+            return "Sorry, there was a problem calcuating your bedtime."
+        }
+    }
+    
     var body: some View {
         NavigationView {
-            Form {
-                VStack(alignment: .center) {
-                    Text("Wake up time")
-                        .font(.headline)
-                    DatePicker("Please enter a time",
-                               selection: $wakeUp,
-                               displayedComponents: .hourAndMinute
-                    )
-                        .labelsHidden()
+            VStack {
+                Text("Recommended bedtime: \(bedtime)")
+                    .font(.title3.weight(.bold))
+                Form {
+                    Section("Wake up Time") {
+                        HStack {
+                            Spacer()
+                            DatePicker("Please enter a time",
+                                       selection: $wakeUp,
+                                       displayedComponents: .hourAndMinute
+                            )
+                                .labelsHidden()
+                            Spacer()
+                        }
+                    }
+                    Section("Desired amount of sleep") {
+                        Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
+                    }
+                    Section("How much coffee") {
+                        Picker("", selection: $coffeeAmount) {
+                            ForEach(0..<21) { num in
+                                Text("^[\(num) cup](inflect: true)")
+                            }
+                        }
+                    }
                 }
-                .frame(maxWidth: .infinity)
-                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
-                VStack {
-                    Text("Desired amount of sleep")
-                        .font(.headline)
-                    Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
+                .navigationTitle("BetterRest")
+                .toolbar {
+                    Button("Calculate", action: calculateBedtime)
                 }
-                VStack {
-                    Text("How much coffee")
-                        .font(.headline)
-                    Stepper("^[\(coffeeAmount) cup](inflect: true)", value: $coffeeAmount, in: 1...20)
+                .alert(alertTitle, isPresented: $showingAlert) {
+                    Button("OK") { }
+                } message: {
+                    Text(alertMessage)
                 }
-//                Text("Sleep time: \()")
-            }
-            .navigationTitle("BetterRest")
-            .toolbar {
-                Button("Calculate", action: calculateBedtime)
-            }
-            .alert(alertTitle, isPresented: $showingAlert) {
-                Button("OK") { }
-            } message: {
-                Text(alertMessage)
             }
         }
     }
