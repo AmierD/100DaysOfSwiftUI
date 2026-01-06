@@ -15,6 +15,8 @@ struct ContentView: View {
     @State private var errorTitle = ""
     @State private var errorMessage = ""
     @State private var showingError = false
+    
+    @State private var score = 0
     var body: some View {
         NavigationStack {
             List {
@@ -33,6 +35,13 @@ struct ContentView: View {
                 }
             }
             .navigationTitle(rootWord)
+            .toolbar {
+                Button("New Word") {
+                    startGame()
+                }
+            }
+            Text("Score: \(score)")
+                .font(.largeTitle.bold())
         }
         // runs when the view is shown
         .onAppear(perform: startGame)
@@ -45,6 +54,10 @@ struct ContentView: View {
     
     func startGame() {
         // find URL for start.txt in app bundle
+        withAnimation {
+            usedWords = []
+            score = 0
+        }
         if let startWordsURL = Bundle.main.url(
             forResource: "start",
             withExtension: "txt"
@@ -79,6 +92,17 @@ struct ContentView: View {
             wordError(title: "Word not a word", message: "Did you make that up?")
             return
         }
+        guard isNotRootWord(answer) else {
+            wordError(title: "Word same as root word", message: "Be more original")
+            return
+        }
+        guard isGreaterThan2Letters(answer) else {
+            wordError(
+                title: "Word shorter than 3 letters",
+                message: "Give a longer word"
+            )
+            return
+        }
         guard isOriginal(answer) else {
             wordError(title: "Word used already", message: "Be more original")
             return
@@ -91,7 +115,24 @@ struct ContentView: View {
         withAnimation {
             usedWords.insert(answer, at: usedWords.count)
         }
+        handleScore(answer)
         newWord = ""
+    }
+    
+    func isWord(_ word: String) -> Bool {
+        let checker = UITextChecker()
+        let range = NSRange(location: 0, length: word.utf16.count)
+        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
+        
+        return misspelledRange.location == NSNotFound
+    }
+    
+    func isNotRootWord(_ word: String) -> Bool {
+        word != rootWord
+    }
+    
+    func isGreaterThan2Letters(_ word: String) -> Bool {
+        word.count > 2
     }
     
     func isOriginal(_ word: String) -> Bool {
@@ -110,18 +151,14 @@ struct ContentView: View {
         return true
     }
     
-    func isWord(_ word: String) -> Bool {
-        let checker = UITextChecker()
-        let range = NSRange(location: 0, length: word.utf16.count)
-        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
-        
-        return misspelledRange.location == NSNotFound
-    }
-    
     func wordError(title: String, message: String) {
         errorTitle = title
         errorMessage = message
         showingError = true
+    }
+    
+    func handleScore(_ word: String) {
+        score += word.count * 10
     }
 }
 
