@@ -22,7 +22,10 @@ struct ContentView: View {
         "US"
     ]
         .shuffled()
-    @State private var correctAnswer = Int.random(in: 0..<3)
+    
+    static private let countFlags = 3
+    
+    @State private var correctAnswer = Int.random(in: 0..<countFlags)
     @State private var showingScoreAlert = false
     @State private var scoreTitle = " "
     @State private var isAnswerCorrect = false
@@ -30,6 +33,15 @@ struct ContentView: View {
     @State private var highScore = 0
     @State private var countQuestions = 0
     @State private var showingGameEndAlert = false
+    
+    @State private var showingNextButton = false
+    
+    @State private var selectedFlagNum = -1
+    
+    @State var flagAnimations: [Angle] = Array(
+        repeating: Angle(degrees: 0.0),
+        count: countFlags
+    )
     
     var body: some View {
         ZStack {
@@ -51,12 +63,23 @@ struct ContentView: View {
                         .font(.largeTitle.weight(.heavy))
                 }
                 Spacer()
-                ForEach(0..<3) { number in
+                ForEach(0..<ContentView.countFlags, id: \.self) { number in
                     Button {
                         flagTapped(number)
+                        withAnimation {
+                            selectedFlagNum = number
+                            flagAnimations[number] += Angle(degrees: 360)
+                            if score < 8 {
+                                showingNextButton = true
+                            }
+                        }
                     } label: {
                         FlagImage(item: countries[number])
+                            .rotation3DEffect(flagAnimations[number], axis: (0, 1, 0))
+                            .opacity(getFlagOpacity(number: number))
+                            .scaleEffect(getFlagScale(number: number))
                     }
+                    .disabled(showingNextButton)
                 }
                 Spacer()
                 Spacer()
@@ -65,11 +88,21 @@ struct ContentView: View {
                     Text("High score: \(highScore)")
                 }
                 Spacer()
+                if showingNextButton {
+                    Button("Next") {
+                        showNewFlags()
+                        withAnimation {
+                            showingNextButton = false
+                        }
+                    }
+                    .buttonStyle(.glass)
+                    .controlSize(.large)
+                }
             }
             .padding()
         }
         .alert(scoreTitle, isPresented: $showingScoreAlert) {
-            Button("Play again", action: showNewFlags)
+            Button("Ok") { }
         } message: {
             Text("Score: \(score)")
         }
@@ -88,12 +121,10 @@ struct ContentView: View {
             scoreTitle = "Correct"
             isAnswerCorrect = true
             score += 1
-            showNewFlags()
         } else {
             scoreTitle = "Incorrect. That was \(countries[number])"
             isAnswerCorrect = false
             showingScoreAlert = true
-            
         }
         handleHighScore()
         countQuestions += 1
@@ -105,11 +136,12 @@ struct ContentView: View {
     
     func showNewFlags() {
         countries.shuffle()
-        correctAnswer = Int.random(in: 0...2)
-        if scoreTitle.hasPrefix("Incorrect") {
+        correctAnswer = Int.random(in: 0..<ContentView.countFlags)
+        if !isAnswerCorrect {
             score = 0
         }
         isAnswerCorrect = false
+        selectedFlagNum = -1
     }
     
     func handleHighScore() {
@@ -123,6 +155,21 @@ struct ContentView: View {
         score = 0
         highScore = 0
         showNewFlags()
+    }
+    
+    func getFlagOpacity(number: Int) -> CGFloat {
+        if !showingNextButton || number == selectedFlagNum {
+            return 1.0
+        } else {
+            return 0.25
+        }
+    }
+    func getFlagScale(number: Int) -> CGFloat {
+        if !showingNextButton || number == selectedFlagNum {
+            return 1.0
+        } else {
+            return 0.9
+        }
     }
 }
 
