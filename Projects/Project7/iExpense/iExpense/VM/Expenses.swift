@@ -23,11 +23,8 @@ class Expenses {
                 items = decodedItems
                 return
             }
-            
-            items = []
         }
-        else {
-            items = []
-        }
+        
+        items = [ExpenseItem]()
     }
 }

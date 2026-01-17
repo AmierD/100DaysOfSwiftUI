@@ -51,6 +51,5 @@ struct AddView: View {
 }
 
 #Preview {
-    var expenses = Expenses()
-    AddView(expenses: expenses)
+    AddView(expenses: Expenses())
 }

@@ -13,15 +13,22 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(expenses.items) { item in
-                    HStack {
-                        Text(item.name)
-                        Spacer()
-                        Text(item.cost, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                        Image(systemName: item.type == "Personal" ? "person" : "briefcase")
+                Section("Personal") {
+                    ForEach(expenses.items) { item in
+                        if item.type == "Personal" {
+                            ExpenseItemView(item: item)
+                        }
                     }
+                    .onDelete(perform: removeItems)
                 }
-                .onDelete(perform: removeItems)
+                Section("Business") {
+                    ForEach(expenses.items) { item in
+                        if item.type == "Business" {
+                            ExpenseItemView(item: item)
+                        }
+                    }
+                    .onDelete(perform: removeItems)
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
