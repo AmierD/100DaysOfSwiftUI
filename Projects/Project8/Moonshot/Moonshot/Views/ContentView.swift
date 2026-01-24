@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var path = NavigationPath()
     let astronauts: [String: Astronaut] = Bundle.main.decode("astronauts.json")
     let missions: [Mission] = Bundle.main.decode("missions.json")
     
@@ -18,7 +19,7 @@ struct ContentView: View {
     @State private var missionLayout = MissionLayout.grid
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             Group {
                 if missionLayout == .grid {
                     MissionGridLayout(astronauts: astronauts, missions: missions)
@@ -42,6 +43,12 @@ struct ContentView: View {
                 }
                 .preferredColorScheme(.dark)
                 .background(.darkBackground)
+                .navigationDestination(for: Mission.self) { mission in
+                    MissionView(mission: mission, astronauts: astronauts)
+                }
+                .navigationDestination(for: MissionView.CrewMember.self) { crewMember in
+                    AstronautView(astronaut: crewMember.astronaut)
+                }
         }
     }
 }
@@ -56,9 +63,7 @@ struct MissionGridLayout: View {
         ScrollView {
             LazyVGrid(columns: columns) {
                 ForEach(missions) { mission in
-                    NavigationLink {
-                        MissionView(mission: mission, astronauts: astronauts)
-                    } label: {
+                    NavigationLink(value: mission) {
                         VStack {
                             Image(mission.image)
                                 .resizable()
@@ -96,9 +101,7 @@ struct MissionListLayout: View {
     var body: some View {
         List {
             ForEach(missions) { mission in
-                NavigationLink {
-                    MissionView(mission: mission, astronauts: astronauts)
-                } label: {
+                NavigationLink(value: mission) {
                     VStack {
                         Image(mission.image)
                             .resizable()

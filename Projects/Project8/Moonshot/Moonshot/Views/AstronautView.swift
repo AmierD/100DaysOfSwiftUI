@@ -28,7 +28,7 @@ struct AstronautView: View {
 }
 
 #Preview {
-    var astronauts: [String: Astronaut] = Bundle.main.decode("astronauts.json")
+    let astronauts: [String: Astronaut] = Bundle.main.decode("astronauts.json")
     AstronautView(astronaut: astronauts["aldrin"]!)
         .preferredColorScheme(.dark)
 }

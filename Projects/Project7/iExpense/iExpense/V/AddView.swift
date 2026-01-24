@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct AddView: View {
-    @Environment(\.dismiss) var dismiss
+    @Binding var path: NavigationPath
     var expenses: Expenses
     
-    @State private var name = ""
+    @State private var name = "Enter item name"
     @State private var type = "Personal"
     @State private var cost = 0.0
     
@@ -22,9 +22,6 @@ struct AddView: View {
         VStack{
             Spacer()
             VStack(spacing: 50) {
-                TextField("Enter name", text: $name)
-                    .focused($nameFieldIsFocused)
-                    .multilineTextAlignment(.center)
                 TextField("Enter cost", value: $cost, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.center)
@@ -41,15 +38,26 @@ struct AddView: View {
             Button("Add Expense", action: addExpense)
                 .buttonStyle(.bordered)
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle($name)
+        .navigationBarBackButtonHidden()
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel", systemImage: "xmark") {
+                    path = NavigationPath()
+                }
+            }
+        }
     }
     
     func addExpense() {
         let expense = ExpenseItem(name: name, type: type, cost: cost)
         expenses.items.append(expense)
-        dismiss()
+        path = NavigationPath()
     }
 }
 
 #Preview {
-    AddView(expenses: Expenses())
+    @Previewable @State var path = NavigationPath()
+    AddView(path: $path, expenses: Expenses())
 }

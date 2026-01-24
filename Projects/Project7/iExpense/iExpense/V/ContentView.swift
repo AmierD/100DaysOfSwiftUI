@@ -9,9 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var expenses = Expenses()
-    @State private var sheetIsPresented = false
+    @State private var path = NavigationPath()
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             List {
                 Section("Personal") {
                     ForEach(expenses.items) { item in
@@ -37,13 +37,11 @@ struct ContentView: View {
             }
             .toolbar {
                 Button("Add Expense", systemImage: "plus") {
-                    withAnimation {
-                        sheetIsPresented = true
-                    }
+                    path.append(1)
                 }
             }
-            .sheet(isPresented: $sheetIsPresented) {
-                AddView(expenses: expenses)
+            .navigationDestination(for: Int.self) { _ in
+                AddView(path: $path, expenses: expenses)
             }
             .navigationTitle("iExpense")
         }
