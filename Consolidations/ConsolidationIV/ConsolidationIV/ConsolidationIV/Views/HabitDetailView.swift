@@ -29,7 +29,7 @@ struct HabitDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(action: addHabit) {
-                    Image(systemName: "plus")
+                    Image(systemName: "checkmark")
                 }
             }
         }
@@ -38,6 +38,7 @@ struct HabitDetailView: View {
             Button("Ok", action: exitView)
         }
         .sensoryFeedback(.warning, trigger: emptyTitleAlert)
+        .navigationTitle("Edit Habit")
     }
     
     func addHabit() {

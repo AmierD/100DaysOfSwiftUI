@@ -18,9 +18,9 @@ struct AddHabitView: View {
         NavigationStack {
             HabitEditView(habitTitle: $habitTitle, habitDescription: $habitDescription)
             .toolbar {
-                ToolbarItem(placement: .bottomBar) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button(action: addHabit) {
-                        Image(systemName: "plus")
+                        Image(systemName: "checkmark")
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {
@@ -39,6 +39,7 @@ struct AddHabitView: View {
                 }
             }
             .sensoryFeedback(.warning, trigger: emptyTitleAlert)
+            .navigationTitle("New Habit")
         }
     }
     

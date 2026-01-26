@@ -40,7 +40,6 @@ struct HabitEditView: View {
                     .background(.gray.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 15))
             }
-            .navigationTitle("New Habit")
             Spacer()
             Spacer()
             Spacer()
