@@ -5,7 +5,7 @@
 ## About
 This repository documents my progress through Paul Hudson's "100 days of SwiftUI" course. My goal is to get comfortable with the fundamentals of Swift so I can start building some iOS applications!
 
-## **Status**: Completed Day 48 / 100
+## **Status**: Completed Day 49 / 100
 ### Favorite apps so far:
  - Consolidation III | I am really proud of the animations in this times table game
 
