@@ -10,6 +10,7 @@ import SwiftUI
 struct CheckoutView: View {
     var order: Order
     
+    @State private var confimationTitle = ""
     @State private var confirmationMessage = ""
     @State private var showingConfirmation = false
     
@@ -62,10 +63,14 @@ struct CheckoutView: View {
             let (data, _) = try await URLSession.shared.upload(for: request, from: encoded)
 
             let decodedOrder = try JSONDecoder().decode(Order.self, from: data)
+            confimationTitle = "Thank you!"
             confirmationMessage = "Your order for \(decodedOrder.quantity)x \(Order.types[decodedOrder.type].lowercased()) cupcakes is on its way!"
             showingConfirmation = true
         } catch {
             print("Check out failed: \(error.localizedDescription)")
+            confimationTitle = "Error"
+            confirmationMessage = "Check out failed."
+            showingConfirmation = true
         }
     }
 }

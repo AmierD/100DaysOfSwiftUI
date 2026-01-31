@@ -22,7 +22,29 @@ class Order: Codable {
         case _zip = "zip"
     }
     
-    init() { }
+    init() {
+        name = UserDefaults.standard.string(forKey: "name") ?? ""
+        streetAddress = UserDefaults.standard.string(forKey: "streetAddress") ?? ""
+        city = UserDefaults.standard.string(forKey: "city") ?? ""
+        zip = UserDefaults.standard.string(forKey: "zip") ?? ""
+    }
+    
+    required init(from decoder: Decoder) {
+        do {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let name = try container.decode(String.self, forKey: ._name)
+            let city = try container.decode(String.self, forKey: ._city)
+            let streetAddress = try container.decode(String.self, forKey: ._streetAddress)
+            let zip = try container.decode(String.self, forKey: ._zip)
+            
+            self.name = name
+            self.city = city
+            self.streetAddress = streetAddress
+            self.zip = zip
+        } catch {
+            
+        }
+    }
 
     static var types = ["Vanilla", "Strawberry", "Chocolate", "Rainbow"]
     
@@ -40,13 +62,35 @@ class Order: Codable {
     var extraFrosting = false
     var addSprinkles = false
     
-    var name = ""
-    var streetAddress = ""
-    var city = ""
-    var zip = ""
+    var name = "" {
+        didSet {
+            UserDefaults.standard.set(name, forKey: "name")
+        }
+    }
+    var streetAddress = "" {
+        didSet {
+            UserDefaults.standard.set(streetAddress, forKey: "streetAddress")
+        }
+    }
+    var city = "" {
+        didSet {
+            UserDefaults.standard.set(city, forKey: "city")
+        }
+    }
+    var zip = "" {
+        didSet {
+            UserDefaults.standard.set(zip, forKey: "zip")
+        }
+    }
     
     var hasValidAddress: Bool {
-        if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty {
+        let anyFieldIsEmpty = name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty
+        let anyFieldContainsWhiteSpace =
+            name.trimmingCharacters(in: .whitespacesAndNewlines) == "" ||
+            streetAddress.trimmingCharacters(in: .whitespacesAndNewlines) == "" ||
+            city.trimmingCharacters(in: .whitespacesAndNewlines) == "" ||
+            zip.trimmingCharacters(in: .whitespacesAndNewlines) == ""
+        if anyFieldIsEmpty || anyFieldContainsWhiteSpace {
             return false
         }
         return true
