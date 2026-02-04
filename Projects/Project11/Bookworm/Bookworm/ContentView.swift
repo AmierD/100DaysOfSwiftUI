@@ -10,34 +10,42 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
-    @Query var students: [Student]
+    @Query var books: [Book]
+    
+    @State private var showingAddBook = false
     
     var body: some View {
         NavigationStack {
-            List(students) { student in
-                Text(student.name)
-                    
-            }
-            .navigationTitle("Classroom")
-            .toolbar {
-                Button("Add", systemImage: "plus") {
-                    let firstNames = ["Ginny", "Harry", "Hermione", "Luna", "Ron"]
-                    let lastNames = ["Granger", "Lovegood", "Potter", "Weasley"]
-                    
-                    let chosenFirstName = firstNames.randomElement()!
-                    let chosenLastName = lastNames.randomElement()!
-                    let fullName = "\(chosenFirstName) \(chosenLastName)"
-                    
-                    let student = Student(id: UUID(), name: fullName)
-                    
-                    modelContext.insert(student)
+            List(books) { book in
+                NavigationLink(value: book) {
+                    HStack {
+                        EmojiRatingView(rating: book.rating)
+                            .font(.largeTitle)
+                        VStack(alignment: .leading) {
+                            Text(book.title)
+                                .font(.headline)
+                            Text(book.author)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
             }
+                .sheet(isPresented: $showingAddBook) {
+                    AddBookView()
+                }
+                .toolbar {
+                    ToolbarItem {
+                        Button("Add") {
+                            showingAddBook = true
+                        }
+                    }
+                }
+                .navigationTitle("Bookworm")
         }
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Student.self, inMemory: true)
+        .modelContainer(for: Book.self)
 }
