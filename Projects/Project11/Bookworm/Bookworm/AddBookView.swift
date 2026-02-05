@@ -13,7 +13,7 @@ struct AddBookView: View {
     @Environment(\.dismiss) var dismiss
     @State private var title = ""
     @State private var author = ""
-    @State private var genre = ""
+    @State private var genre = "Fantasy"
     @State private var review = ""
     @State private var rating = 3
     

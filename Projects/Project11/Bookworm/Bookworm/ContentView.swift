@@ -10,25 +10,32 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
-    @Query var books: [Book]
+    @Query(sort: [
+        SortDescriptor(\Book.title),
+        SortDescriptor(\Book.author)
+    ]) var books: [Book]
     
     @State private var showingAddBook = false
     
     var body: some View {
         NavigationStack {
-            List(books) { book in
-                NavigationLink(value: book) {
-                    HStack {
-                        EmojiRatingView(rating: book.rating)
-                            .font(.largeTitle)
-                        VStack(alignment: .leading) {
-                            Text(book.title)
-                                .font(.headline)
-                            Text(book.author)
-                                .foregroundStyle(.secondary)
+            List {
+                ForEach(books) { book in
+                    NavigationLink(value: book) {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(book.title)
+                                    .font(.headline)
+                                Text(book.author)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            EmojiRatingView(rating: book.rating)
+                                .font(.largeTitle)
                         }
                     }
                 }
+                .onDelete(perform: deleteBooks)
             }
                 .sheet(isPresented: $showingAddBook) {
                     AddBookView()
@@ -39,8 +46,22 @@ struct ContentView: View {
                             showingAddBook = true
                         }
                     }
+                    ToolbarItem(placement: .topBarLeading) {
+                        EditButton()
+                    }
                 }
                 .navigationTitle("Bookworm")
+                .navigationDestination(for: Book.self) { book in
+                    DetailView(book: book)
+                }
+        }
+    }
+    
+    func deleteBooks(at offsets: IndexSet) {
+        for offset in offsets {
+            let book = books[offset]
+            
+            modelContext.delete(book)
         }
     }
 }
