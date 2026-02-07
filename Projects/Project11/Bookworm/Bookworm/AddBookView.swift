@@ -17,6 +17,13 @@ struct AddBookView: View {
     @State private var review = ""
     @State private var rating = 3
     
+    private var isValid: Bool {
+        let titleEmpty = title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let authorEmpty = author.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        
+        return !titleEmpty && !authorEmpty
+    }
+    
     let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
     
     var body: some View {
@@ -45,6 +52,7 @@ struct AddBookView: View {
                 
                 Section {
                     Button("Save", action: saveBook)
+                        .disabled(!isValid)
                 }
             }
             .navigationTitle("Add Book")

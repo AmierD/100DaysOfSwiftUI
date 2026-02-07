@@ -35,6 +35,8 @@ struct DetailView: View {
             Text(book.author)
                 .font(.title)
             
+            Text(book.date.formatted(date: .abbreviated, time: .omitted))
+            
             Text(book.review)
                 .padding()
             
