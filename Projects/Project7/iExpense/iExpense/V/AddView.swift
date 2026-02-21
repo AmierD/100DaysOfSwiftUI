@@ -5,11 +5,11 @@
 //  Created by Amier Davis on 1/15/26.
 //
 
+import SwiftData
 import SwiftUI
 
 struct AddView: View {
     @Binding var path: NavigationPath
-    var expenses: Expenses
     
     @State private var name = "Enter item name"
     @State private var type = "Personal"
@@ -17,7 +17,10 @@ struct AddView: View {
     
     @FocusState private var nameFieldIsFocused: Bool
     
+    @Environment(\.modelContext) var modelContext
+    
     let types = ["Personal", "Business"]
+    
     var body: some View {
         VStack{
             Spacer()
@@ -52,12 +55,13 @@ struct AddView: View {
     
     func addExpense() {
         let expense = ExpenseItem(name: name, type: type, cost: cost)
-        expenses.items.append(expense)
+        modelContext.insert(expense)
         path = NavigationPath()
     }
 }
 
 #Preview {
     @Previewable @State var path = NavigationPath()
-    AddView(path: $path, expenses: Expenses())
+    AddView(path: $path)
+        .modelContainer(for: ExpenseItem.self, inMemory: true)
 }

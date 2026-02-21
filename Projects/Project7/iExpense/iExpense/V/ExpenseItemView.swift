@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ExpenseItemView: View {
     let item: ExpenseItem
+    
     var body: some View {
         HStack {
             Text(item.name)
