@@ -5,16 +5,19 @@
 //  Created by Amier Davis on 2/21/26.
 //
 
+import SwiftData
 import SwiftUI
 
 struct UsersListView: View {
-    @Environment(UsersViewModel.self) private var vm
+    @Environment(\.modelContext) private var modelContext
+    
+    let users: [User]
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVStack {
-                    ForEach(vm.users) { user in
+                    ForEach(users) { user in
                         NavigationLink(value: user) {
                             UserView(user: user)
                                 .foregroundStyle(.black)
@@ -26,6 +29,8 @@ struct UsersListView: View {
                     UserDetailView(user: user)
                 }
             }
+            
         }
+        
     }
 }

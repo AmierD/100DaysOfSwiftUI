@@ -5,23 +5,30 @@
 //  Created by Amier Davis on 2/21/26.
 //
 
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(UsersViewModel.self) var vm
+    @Environment(\.modelContext) private var modelContext
+    
+    @Query var users: [User]
     
     var body: some View {
         VStack {
-            UsersListView()
+            UsersListView(users: users)
         }
         .task {
-            await vm.fetchUsers()
+            if users.isEmpty {
+                let newUsers = await APIService.fetchUsers()
+                for user in newUsers {
+                    modelContext.insert(user)
+                }
+            }
         }
-
     }
 }
 
 #Preview {
     ContentView()
-        .environment(UsersViewModel())
+        .modelContainer(for: User.self)
 }

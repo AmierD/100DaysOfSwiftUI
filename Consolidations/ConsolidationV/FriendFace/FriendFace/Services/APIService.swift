@@ -19,6 +19,8 @@ class APIService {
             
             let decodedUsers = try decoder.decode([User].self, from: data)
             
+            print("uesrs fetched")
+            
             return decodedUsers
         } catch {
             print("Error in API Service \(error.localizedDescription)")
