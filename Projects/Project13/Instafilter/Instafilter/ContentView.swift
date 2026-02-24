@@ -7,13 +7,49 @@
 
 import CoreImage
 import CoreImage.CIFilterBuiltins
+import PhotosUI
+import StoreKit
 import SwiftUI
 
 struct ContentView: View {
     @State private var image: Image?
     
+    @State private var pickerItems = [PhotosPickerItem]()
+    @State private var selectedImages = [Image]()
+    
+    @Environment(\.requestReview) var requestReview
+    
+    let example = Image(.example)
+    
     var body: some View {
         VStack {
+            VStack {
+                PhotosPicker("Select a picture", selection: $pickerItems, maxSelectionCount: 3, matching: .images)
+                ScrollView {
+                    ForEach(0..<selectedImages.count, id: \.self) { i in
+                        selectedImages[i]
+                            .resizable()
+                            .scaledToFit()
+                    }
+                }
+            }
+            .onChange(of: pickerItems) {
+                Task {
+                    selectedImages.removeAll()
+                    
+                    for  item in pickerItems {
+                        if let loadedImage = try await item.loadTransferable(type: Image.self) {
+                            selectedImages.append(loadedImage)
+                        }
+                    }
+                }
+            }
+            ShareLink(item: URL(string: "https://www.hackingwithswift.com")!) {
+                Label("Learn more about Swift", systemImage: "swift")
+            }
+            ShareLink(item: example, preview: SharePreview("Cartman", image: example)) {
+                Label("Share Cartman", systemImage: "square.and.arrow.up")
+            }
             image?
                 .resizable()
                 .scaledToFit()
@@ -22,18 +58,11 @@ struct ContentView: View {
                 systemImage: "swift",
                 description: Text("You don't have any saved snippets yet.")
             )
-            ContentUnavailableView {
-                Label("No snippets", systemImage: "swift")
-            } description: {
-                Text("You don't have any saved snippets yet.")
-            } actions: {
-                Button("Create Snippet") {
-                    // create a snippet
-                }
-                .buttonStyle(.borderedProminent)
-            }
         }
         .onAppear(perform: loadImage)
+        .onAppear {
+            requestReview()
+        }
     }
     
     func loadImage() {
