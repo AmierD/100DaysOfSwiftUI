@@ -5,42 +5,66 @@
 //  Created by Amier Davis on 2/23/26.
 //
 
+import CoreImage
+import CoreImage.CIFilterBuiltins
 import SwiftUI
 
 struct ContentView: View {
-    @State private var blurAmount = 0.0
-    @State private var showingConfirmation = false
-    @State private var backgroundColor: Color = .white
+    @State private var image: Image?
     
     var body: some View {
         VStack {
-            Text("Hello, world!")
-                .blur(radius: blurAmount)
-            
-            Slider(value: $blurAmount, in: 0...20)
-                .onChange(of: blurAmount) { oldValue, newValue in
-                    print("New value is \(blurAmount)")
+            image?
+                .resizable()
+                .scaledToFit()
+            ContentUnavailableView(
+                "No snippets",
+                systemImage: "swift",
+                description: Text("You don't have any saved snippets yet.")
+            )
+            ContentUnavailableView {
+                Label("No snippets", systemImage: "swift")
+            } description: {
+                Text("You don't have any saved snippets yet.")
+            } actions: {
+                Button("Create Snippet") {
+                    // create a snippet
                 }
-            
-            Button("Random Blur") {
-                blurAmount = Double.random(in: 0...20)
+                .buttonStyle(.borderedProminent)
             }
-            
-            Button("Change Background") {
-                showingConfirmation = true
-            }
-            .confirmationDialog("Change Background", isPresented: $showingConfirmation) {
-                Button("Red") { backgroundColor = .red }
-                Button("Green") { backgroundColor = .green }
-                Button("Red") { backgroundColor = .blue }
-                Button("Cancel", role: .cancel) { }
-            } message: {
-                Text("Select a new color.")
-            }
-            .frame(width: 300, height: 300)
-            .background(backgroundColor)
         }
-        .padding()
+        .onAppear(perform: loadImage)
+    }
+    
+    func loadImage() {
+        let inputImage = UIImage(resource: .example)
+        let beginImage = CIImage(image: inputImage)
+        
+        let context = CIContext()
+        
+        let currentFilter = CIFilter.twirlDistortion()
+        currentFilter.inputImage = beginImage
+        
+        let amount = 0.4
+        
+        let inputKeys = currentFilter.inputKeys
+        
+        if inputKeys.contains(kCIInputIntensityKey) {
+            currentFilter.setValue(amount, forKey: kCIInputIntensityKey)
+        }
+        if inputKeys.contains(kCIInputRadiusKey) {
+            currentFilter.setValue(amount * 200, forKey: kCIInputRadiusKey)
+        }
+        if inputKeys.contains(kCIInputScaleKey) {
+            currentFilter.setValue(amount * 10, forKey: kCIInputScaleKey)
+        }
+        
+        guard let outputImage = currentFilter.outputImage else { return }
+        guard let cgImage = context.createCGImage(outputImage, from: outputImage.extent) else {
+            return
+        }
+        let uiImage = UIImage(cgImage: cgImage)
+        image = Image(uiImage: uiImage)
     }
 }
 
