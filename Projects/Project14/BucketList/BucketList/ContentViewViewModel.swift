@@ -20,6 +20,9 @@ extension ContentView {
         
         var isUnlocked = false
         
+        var showingAuthError = false
+        var authErrorMessage = ""
+        
         init() {
             do {
                 let data = try Data(contentsOf: savePath)
@@ -67,12 +70,17 @@ extension ContentView {
                 context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
                     if success {
                         self.isUnlocked = true
+                        return
                     } else {
                         // error
+                        self.authErrorMessage = authenticationError?.localizedDescription ?? "Error"
+                        self.showingAuthError = true
                     }
                 }
             } else {
                 // no biometrics
+                self.authErrorMessage = error?.localizedDescription ?? "Error"
+                self.showingAuthError = true
             }
         }
     }

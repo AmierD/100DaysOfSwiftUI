@@ -18,36 +18,46 @@ struct ContentView: View {
         )
     )
     
+    @State private var isHybrid = false
+    
     var body: some View {
         if viewModel.isUnlocked {
-            MapReader { proxy in
-                Map(initialPosition: startPosition) {
-                    ForEach(viewModel.locations) { location in
-                        Annotation(location.name, coordinate: location.coordinate) {
-                            Image(systemName: "star.circle")
-                                .resizable()
-                                .foregroundStyle(.red)
-                                .frame(width: 44, height: 44)
-                                .background(.white)
-                                .clipShape(.circle)
-                                .contentShape(.circle)
-                                .onTapGesture {
-                                    viewModel.selectedPlace = location
-                                }
+            NavigationStack {
+                MapReader { proxy in
+                    Map(initialPosition: startPosition) {
+                        ForEach(viewModel.locations) { location in
+                            Annotation(location.name, coordinate: location.coordinate) {
+                                Image(systemName: "star.circle")
+                                    .resizable()
+                                    .foregroundStyle(.red)
+                                    .frame(width: 44, height: 44)
+                                    .background(.white)
+                                    .clipShape(.circle)
+                                    .contentShape(.circle)
+                                    .onTapGesture {
+                                        viewModel.selectedPlace = location
+                                    }
+                            }
                         }
+                    }
+                    .mapStyle(isHybrid ? .hybrid : .standard)
+                        .onTapGesture { position in
+                            if let coordinate = proxy.convert(position, from: .local) {
+                                viewModel.addLocation(at: coordinate)
+                            }
+                        }
+                        
+                        .sheet(item: $viewModel.selectedPlace) { place in
+                            EditView(location: place) { newLocation in
+                                viewModel.update(location: newLocation)
+                            }
+                        }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Switch Map Mode") { isHybrid.toggle() }
                     }
                 }
-                    .onTapGesture { position in
-                        if let coordinate = proxy.convert(position, from: .local) {
-                            viewModel.addLocation(at: coordinate)
-                        }
-                    }
-                    
-                    .sheet(item: $viewModel.selectedPlace) { place in
-                        EditView(location: place) { newLocation in
-                            viewModel.update(location: newLocation)
-                        }
-                    }
             }
         } else {
             Button("Unlock Places", action: viewModel.authenticate)
@@ -55,6 +65,11 @@ struct ContentView: View {
                 .background(.blue)
                 .foregroundStyle(.white)
                 .clipShape(.capsule)
+                .alert("Authentication Error", isPresented: $viewModel.showingAuthError) {
+                    Button("Ok") { }
+                } message: {
+                    Text(viewModel.authErrorMessage)
+                }
         }
     }
 }

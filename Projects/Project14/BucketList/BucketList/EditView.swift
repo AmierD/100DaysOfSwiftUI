@@ -9,6 +9,9 @@ import SwiftUI
 
 struct EditView: View {
     @Environment(\.dismiss) var dismiss
+    
+    @State private var vm: ViewModel
+    
     var location: Location
     
     @State private var name: String
@@ -20,16 +23,10 @@ struct EditView: View {
         self.location = location
         self.onSave = onSave
         
+        vm = ViewModel(location: location)
         _name = State(initialValue: location.name)
         _description = State(initialValue: location.description)
     }
-    
-    enum LoadingState {
-        case loading, loaded, failed
-    }
-    
-    @State private var loadingState: LoadingState = .loading
-    @State private var pages = [Page]()
     
     var body: some View {
         NavigationStack {
@@ -40,12 +37,12 @@ struct EditView: View {
                 }
                 
                 Section("Nearby...") {
-                    switch loadingState {
+                    switch vm.loadingState {
                     case .loading:
                         Text("Loading...")
                     case .loaded:
                         
-                        ForEach(pages, id: \.pageid) { page in
+                        ForEach(vm.pages, id: \.pageid) { page in
                             let titleText = Text(page.title)
                                 .font(.headline)
                             let descriptionText = Text(page.description)
@@ -69,31 +66,11 @@ struct EditView: View {
                 }
             }
             .task {
-                await fetchNearbyPlaces()
+                await vm.fetchNearbyPlaces()
             }
         }
     }
     
-    func fetchNearbyPlaces() async {
-        let urlString = "https://en.wikipedia.org/w/api.php?ggscoord=\(location.latitude)%7C\(location.longitude)&action=query&prop=coordinates%7Cpageimages%7Cpageterms&colimit=50&piprop=thumbnail&pithumbsize=500&pilimit=50&wbptterms=description&generator=geosearch&ggsradius=10000&ggslimit=50&format=json"
-        
-        guard let url = URL(string: urlString) else {
-            print("Bad URL: \(urlString)")
-            return
-        }
-        
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            
-            let items = try JSONDecoder().decode(Result.self, from: data)
-            
-            pages = items.query.pages.values.sorted()
-            
-            loadingState = .loaded
-        } catch {
-            loadingState = .failed
-        }
-    }
 }
 
 #Preview {
