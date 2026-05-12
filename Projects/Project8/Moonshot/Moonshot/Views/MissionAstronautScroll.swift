@@ -23,6 +23,7 @@ struct MissionAstronautScroll: View {
                                     Capsule()
                                         .strokeBorder(.white, lineWidth: 1)
                                 )
+                                .accessibilityHidden(true)
                             VStack(alignment: .leading) {
                                 Text(crewMember.astronaut.name)
                                     .foregroundStyle(.white)
@@ -30,6 +31,7 @@ struct MissionAstronautScroll: View {
                                 Text(crewMember.role)
                                     .foregroundStyle(.white.opacity(0.5))
                             }
+                            .accessibilityElement(children: .combine)
                         }
                         .padding(.horizontal)
                     }
