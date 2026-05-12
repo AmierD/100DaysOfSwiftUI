@@ -36,21 +36,25 @@ struct MissionView: View {
                     .containerRelativeFrame(.horizontal) { width, _ in
                         width * 0.6
                     }
+                    .accessibilityHidden(true)
                 
                 VStack(alignment: .leading) {
                     Text("Mission Highlights")
                         .font(.title.bold())
                         .padding(.bottom, 5)
                     Text(mission.launchDate?.formatted(date: .complete, time: .omitted) ?? "")
+                        .accessibilityLabel("Mission launch date, \(mission.launchDate?.formatted(date: .complete, time: .omitted) ?? "")")
                     Rectangle()
                         .frame(height: 2)
                         .foregroundStyle(.lightBackground)
                         .padding(.vertical)
+                        .accessibilityHidden(false)
                     Text(mission.description)
                     Rectangle()
                         .frame(height: 2)
                         .foregroundStyle(.lightBackground)
                         .padding(.vertical)
+                        .accessibilityHidden(false)
                     Text("Crew")
                         .font(.title.bold())
                         .padding(.bottom, 5)

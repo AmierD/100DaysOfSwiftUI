@@ -30,6 +30,8 @@ struct ExpenseListView: View {
             Section("Expenses") {
                 ForEach(expenses) { item in
                     ExpenseItemView(item: item)
+                        .accessibilityLabel("\(item.name), $\(item.cost)")
+                        .accessibilityHint(item.type)
                 }
                 .onDelete(perform: removeItems)
             }
